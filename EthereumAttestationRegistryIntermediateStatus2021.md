@@ -45,7 +45,7 @@ This proof type requires the DID document of the issuer's DID to contain an `eth
     "name": "John Doe",
     "birthdate": "2018-01-01"
   },
-  "issuer": "did:gid:2uukHPBYMjdZPkg4p5ZjipKHzkaXLr4T5ut",
+  "issuer": "did:ev:2uukHPBYMjdZPkg4p5ZjipKHzkaXLr4T5ut",
   "proof": {
       "type": "EthereumAttestationRegistryIntermediateStatus2021",
       "contractAddress": "0x123f681646d4a755815f9cb19e1acc8565a0c2ac",
@@ -94,11 +94,11 @@ The following steps MUST be applied by a credential's issuer in order to generat
 
 ## Proof Verification Method
 
-To verify the proof, the hashes must be looked up on the registry smart contract. A credential is deemed valid if the Attestation Hash is valid *and* the Revocation Hash is not valid.
+To verify the proof, the hashes must be looked up on the registry smart contract. A proof is deemed valid if the Attestation Hash is valid *and* the Revocation Hash is not valid.
 
 The overall verification strategy is the following:
 
-- Look up the Verification Hash.
+- Look up the Revocation Hash.
   - If it is found, the credential is not valid.
   - Otherwise, look up the Attestation Hash.
     - If it is found, the credential is valid.
@@ -125,7 +125,7 @@ Verifiable Credentials equipped with a `EthereumAttestationRegistryIntermediateS
 
 ## Status Verification Method
 
-Since the proof in an `EthereumAttestationRegistryIntermediateStatus2021` Verifiable Credential can be changed dynamically on an Ethereum ledger, the status of a credential is always "Valid" as long as the proof can be verified. If the issuer (or authorized party) wishes to revoke a VC, they will simply revoke the proof itself in the smart contract.
+Since the proof in an `EthereumAttestationRegistryIntermediateStatus2021` Verifiable Credential can be updated dynamically on an Ethereum ledger, the status of a credential is always "Valid" as long as the proof can be verified. If the issuer (or authorized party) wishes to revoke a VC, they will simply revoke the proof itself in the smart contract.
 
 ## Status/proof Revocation Method
 
