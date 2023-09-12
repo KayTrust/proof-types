@@ -92,16 +92,6 @@ The following steps MUST be applied by a credential's issuer in order to generat
    1. Use the original credential (i.e. without stripping the `proof object`).
    2. Update the credential with the new `proof` object (see Specification section above).
 
-## Proof Revocation Method
-
-This proof type allows for an issued credential to be revoked by the issuer before its expiration date.
-
-1. **Step 1: Calculate Revocation Hash**
-2. **Step 2: Send the Ethereum transaction**
-   - Use the contract address and network listed in the `proof` object.
-   - Same recommendations as for proof generation, this time using the Revocation Hash.
-
-
 ## Proof Verification Method
 
 To verify the proof, the hashes must be looked up on the registry smart contract. A credential is deemed valid if the Attestation Hash is valid *and* the Revocation Hash is not valid.
@@ -128,3 +118,20 @@ The following steps MUST be applied to look up either hash:
 ## Performance Considerations
 
 With this proof type, an Ethereum transaction must be executed for each new attestation. This specification should be improved in the future to allow more scalable approaches.
+
+# Status type
+
+Verifiable Credentials equipped with a `EthereumAttestationRegistryIntermediateStatus2021` proof use an implicit Status type with the same name. This section describes that Status type.
+
+## Status Verification Method
+
+Since the proof in an `EthereumAttestationRegistryIntermediateStatus2021` Verifiable Credential can be changed dynamically on an Ethereum ledger, the status of a credential is always "Valid" as long as the proof can be verified. If the issuer (or authorized party) wishes to revoke a VC, they will simply revoke the proof itself in the smart contract.
+
+## Status/proof Revocation Method
+
+For an issued credential to be revoked by the issuer (or any other authorized party) before its expiration date, the following steps must be taken.
+
+1. **Step 1: Calculate Revocation Hash**
+2. **Step 2: Send the Ethereum transaction**
+   - Use the contract address and network listed in the `proof` object.
+   - Same recommendations as for proof generation, this time using the Revocation Hash.
