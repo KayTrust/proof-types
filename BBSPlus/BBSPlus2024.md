@@ -28,7 +28,7 @@ It must contain the following attributes:
   <dd>The proof type, as defined in the Verifiable Credentials specification. The value MUST be <code>"BBSPlusRange2024"</code>.</dd>
   <dt>label</dt>
   <dd>The BBS+ label.</dd>
-  <dt>signature</dt>
+  <dt>sig</dt>
   <dd>The content of the generated zero-knowledge proof.</dd>
 
 </dl>
