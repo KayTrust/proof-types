@@ -33,6 +33,13 @@ It must contain the following attributes:
 
 </dl>
 
+## Transforming an original VC into a derived VC
+
+In ZKP scenarios, the Prover is the one generating the derived VC from the information present in the original VC. Thus, the Prover would be the technical "author" of the derived VC. However, the issuer of the original VC is also the "issuer" of the derived VC, since the assertion still comes from them, and can be trusted as such.
+
+To convert a numeric value into a Range Proof for a given claim, the Prover must keep the same claim name but must replace the numeric value with an object containing a `min` and a `max` attribute.
+
+The "claims" attribute must be the exact same as in the original VC.
 
 ## Example
 
@@ -47,7 +54,6 @@ It must contain the following attributes:
   "credentialSubject": {
     "id": "did:example:123",
     "birthDate": {
-      "@type": "Range",
       "min": 762365700,
       "max": 762365800
     }
@@ -56,7 +62,8 @@ It must contain the following attributes:
   "issuanceDate": "2024-02-13T14:39:29.693Z",
   "proof": {
     "type": "BBSPlusRange2024",
-    "label": "[\"BirthInformation\",\"birthDate\"]",
+    "label": "Some label",
+    "claims": [".issuanceDate", ".expirationDate", "id", "birthDate"]
     "proofValue": "AgAAAAAAAAAAt0r9ej3XSw_CYpRqGEKO7tSu_XTnw9-X8Czp5Lg4AkHFJ_VQJWlyBG5b7Cecl582tSQhaggQ0ep9Hghrm0JwxxnAd1nygtX0TMR0KPA1WvcvYpy1bKOZLre_TsFotuuDov3XEGB6D7ZqGlZhd3dV1oFLUanTlR38-IgwaRyMwGd_kXpA7Pwnmq7lJtG2L3OYry9HEphoF691oFjH1SLsUtVt0jzgbd4tSy5HlV7c6iqvlpMV26rUp3lbznk5TMTKAgAAAAAAAABZ0e1DcbuZSQ-ojrvkBIC7YHL-VNbEmVuvX99yQmYoVXydCxTZBCgBReFAkqrf9uwNmRVtjakKYEGow6wvQ948kI6WyFKgOBy5YPlQXGYQj43BOQAuXj80D17v1HUSTWga9-xB9Gq86mYLrG6M8bP_AwAAAAAAAACTzd52xwKqD09kz6Hgbwu7oqiMv6O2k5yJ854YxFjQXjO-YpEMzPB-KZtZZkuoJGbTXQkd7pNu6zp42F9c04Vto7402kihd2puGFt6VE3Ui8M2ekj1tuGQxLbKhIUcj1gFq3lqR4ZVZ2sMMUslGw7tuxafkwKARiDWXxqdNPVsOxakjEU1Ma_h9jBa0rQ_RoscqnWrzHP0DzZgax0kyWztu5I4pdbsWgzZlWP1jLf9jXmBj7wjCgPb2rvUZxjihciCGPVbDoJMKuKOVtfFUzbGnur5vZsI1swhBXr4jG5xHDvIb8dsE9Kpk-2frWQVFlhgg8YbSLu5Xm1hWhdqoUcPvJ_AzvjyRLYfLxnx_6T5J_E7xWheWNM6FEEjijPu7KsXhSZwjpO7VRv0mbAZKC94aoLxItygDiiBq2utUK9TKk2Tdap-JAx3Lcp-16Lml4yDrPAHxqVuRi_W8j58t4UbunhBQwYMbWbo9zBOoaI93kimW70dFJrUn21-FYK6ncLVAgAAAAAAAACjvjTaSKF3am4YW3pUTdSLwzZ6SPW24ZDEtsqEhRyPWGzB9JJRnwSy3eFkppzAbB3ghRXxaIylA3NULF_5oEhkAAAAAQAAAAAAAAABAAAAAAAAALh_HDpIoFGvv8kox2KpjQHUBMu-dQCQzjvJL-EUgswm"
   }
 }
@@ -64,8 +71,12 @@ It must contain the following attributes:
 
 ## Proof Generation Steps
 
-
+1. Decide what claims of the original VC are to be included in the VC.
+2. Create the "credentialSubject" content with the chosen claims' keys and values.
+3. Replace the numeric values with ranges wherever needed.
+4. Generate the proof from the original signature and new values.
 
 ## Proof Verification Steps
 
-
+1. Following the order of claims in the proof object and the values present in the VC, generate a list of messages in the form ["key1", "value1", "key2", "value2", ...]
+2. Decode the signature as base64 and verify the message list against the signature.

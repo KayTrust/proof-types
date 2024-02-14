@@ -27,12 +27,20 @@ It must contain the following attributes:
   <dt>type</dt>
   <dd>The proof type, as defined in the Verifiable Credentials specification. The value MUST be <code>"BBSPlusRange2024"</code>.</dd>
   <dt>label</dt>
-  <dd>The BBS+ label.</dd>
+  <dd>The BBS+ label to be used.</dd>
   <dt>sig</dt>
-  <dd>The content of the generated zero-knowledge proof.</dd>
-
+  <dd>The content of the BBS+ signature.</dd>
 </dl>
 
+## Message encoding
+
+BBS+ signatures involved a signed list of messages. This document specifies how to go back and forth between a list of attributes in a VC and a list of messages:
+
+- The signer chooses an order in the list of claims present in `credentialSubject`, and generates a `claims` attribute in the `proof` object, representing the list of claims in the chosen order.
+- Special key names `.issuanceDate` and `.expirationDate` (with leading dots) must always be present, and correspond to the VC's top level attributes of the same names. If either claim is missing from the VC, the key should still be included in the list, with a value of 0.
+- Dates are always expressed as integer values representing a timestamp.
+
+Please note that all claim names mentioned in the VC's credentialSubject must be covered in the message list, otherwise verifiers won't be able to verify their integrity.
 
 ## Example
 
@@ -53,24 +61,21 @@ It must contain the following attributes:
   "proof": {
     "type": "BBSPlus2024",
     "sig": "ibspQVU3EmMxS7jW3_sF0iFa4uu5A5ToZDjLJb-LsAuAkbPeM19CdaLQTvQw50QKcQj05T0VETpZ4Sb18H8tpGlaYMr66QmbRGYHTjQxqgTKdYoJVBswOIUAgzCKnrJEHYZfusgKqITXC97fbk4paA",
-    "label": "[\"BirthInformation\",\"birthDate\"]"
+    "label": "Some label",
+    "claims": [".issuanceDate", ".expirationDate", "id", "birthDate"]
   }
 }
 ```
 
 ## Proof Generation Steps
 
-1. Select the claims that will be covered by the signature
-2. Generate label from the list of claims
-3. Generate message from the list of values corresponding to the selected claims
-4. Generate signature from label + message
-5. Encode the signature in base 64
-6. Generate "proof" object based on signature and label
-
+1. Pick an order for the claims contained in the VC's credentialSubject attribute.
+2. Following that order, generate a list of messages in the form: ["key1", "value1", "key2", "value2", ...].
+3. Sign the message list with BBS+.
+4. Encode the signature in base 64.
+5. Generate "proof" object based on the signature and the claim order.
 
 ## Proof Verification Steps
 
-1. Deserialize label as a list of claim names covered by the signature
-2. Locate the claims from the VC, based on the claim names
-3. Generate message from the list of values corresponding to the selected claims
-4. Verify signature using the message and label
+1. Following the order of claims in the proof object and the values present in the VC, generate a list of messages in the form ["key1", "value1", "key2", "value2", ...]
+2. Decode the signature as base64 and verify the message list against the signature.
