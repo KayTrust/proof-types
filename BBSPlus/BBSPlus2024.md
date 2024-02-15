@@ -81,3 +81,36 @@ Please note that all claim names mentioned in the VC's credentialSubject must be
 
 1. Following the order of claims in the proof object and the values present in the VC, generate a list of messages in the form ["key1", "value1", "key2", "value2", ...]
 2. Decode the signature as base64 and verify the message list against the signature.
+
+# Algorithms
+
+## createBBSPlus2024Proof
+
+The following algorithm creates a BBSPlus2024 proof object for a verifiable credential. The required inputs are a credential, (which optional fields `issuanceDate`, `expirationDate` and a required field `credentialSubject`), a BBS+ private key and a public parameter known as a `label` (a string).
+
+1. Generate the message list `messages` from the credential.
+    1. Create an object of depth one with `issuanceDate`, `expirationDate` and all the information from `credentialSubject`.
+    2. Define a claim order where the strings `.issuanceDate` and `.expirationDate` are always first.
+    3. Flat this new object in an array that must follow the pattern `[key1, value1, key2, value2, ...]`, where `keyn` is either `".issuanceDate"`, `".expirationDate"` or the claim name, always in a pair index, and the value in the subsequent odd index. Values for `issuanceDate` or `expirationDate` defaults to `0`.
+2. Sign the message list with the BBS+ private key and public parameters. You must derived public parameter `messageCount` from the array generated in step 1.
+3. Encode the signature bytes in base 64 url.
+4. Generate `proof` object with `type`, `sig`, `label` and `claims` properties.
+    1. `type` is always "BBSPlus2024".
+    2. `sig` is the base 64 url encoded signature.
+    3. `label` is the same public parameter that was used as one of the inputs of this function.
+    4. `claims` elements are `".issuanceDate"`, `".expirationDate"` and all the claim names included in the message list `messages`, in the order defined in step 1.2.
+
+
+Example of `proof` object:
+
+```
+{ 
+  proof: {
+    "type": "BBSPlus2024",
+    "sig": "ibspQVU3EmMxS7jW3_sF0iFa4uu5A5ToZDjLJb-LsAuAkbPeM19CdaLQTvQw50QKcQj05T0VETpZ4Sb18H8tpGlaYMr66QmbRGYHTjQxqgTKdYoJVBswOIUAgzCKnrJEHYZfusgKqITXC97fbk4paA",
+    "label": "Some label",
+    "claims": [".issuanceDate", ".expirationDate", "id", "givenName", "familyName", "birthDate"]
+  }  
+}
+```
+
