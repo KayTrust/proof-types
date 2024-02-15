@@ -63,20 +63,26 @@ The "claims" attribute must be the exact same as in the original VC.
   "proof": {
     "type": "BBSPlusRange2024",
     "label": "Some label",
-    "claims": [".issuanceDate", ".expirationDate", "id", "birthDate"]
+    "claimIndex": {
+      ".issuanceDate": 0,
+      ".expirationDate": 1,
+      "id": 2,
+      "birthDate": 5
+    }
     "proofValue": "AgAAAAAAAAAAt0r9ej3XSw_CYpRqGEKO7tSu_XTnw9-X8Czp5Lg4AkHFJ_VQJWlyBG5b7Cecl582tSQhaggQ0ep9Hghrm0JwxxnAd1nygtX0TMR0KPA1WvcvYpy1bKOZLre_TsFotuuDov3XEGB6D7ZqGlZhd3dV1oFLUanTlR38-IgwaRyMwGd_kXpA7Pwnmq7lJtG2L3OYry9HEphoF691oFjH1SLsUtVt0jzgbd4tSy5HlV7c6iqvlpMV26rUp3lbznk5TMTKAgAAAAAAAABZ0e1DcbuZSQ-ojrvkBIC7YHL-VNbEmVuvX99yQmYoVXydCxTZBCgBReFAkqrf9uwNmRVtjakKYEGow6wvQ948kI6WyFKgOBy5YPlQXGYQj43BOQAuXj80D17v1HUSTWga9-xB9Gq86mYLrG6M8bP_AwAAAAAAAACTzd52xwKqD09kz6Hgbwu7oqiMv6O2k5yJ854YxFjQXjO-YpEMzPB-KZtZZkuoJGbTXQkd7pNu6zp42F9c04Vto7402kihd2puGFt6VE3Ui8M2ekj1tuGQxLbKhIUcj1gFq3lqR4ZVZ2sMMUslGw7tuxafkwKARiDWXxqdNPVsOxakjEU1Ma_h9jBa0rQ_RoscqnWrzHP0DzZgax0kyWztu5I4pdbsWgzZlWP1jLf9jXmBj7wjCgPb2rvUZxjihciCGPVbDoJMKuKOVtfFUzbGnur5vZsI1swhBXr4jG5xHDvIb8dsE9Kpk-2frWQVFlhgg8YbSLu5Xm1hWhdqoUcPvJ_AzvjyRLYfLxnx_6T5J_E7xWheWNM6FEEjijPu7KsXhSZwjpO7VRv0mbAZKC94aoLxItygDiiBq2utUK9TKk2Tdap-JAx3Lcp-16Lml4yDrPAHxqVuRi_W8j58t4UbunhBQwYMbWbo9zBOoaI93kimW70dFJrUn21-FYK6ncLVAgAAAAAAAACjvjTaSKF3am4YW3pUTdSLwzZ6SPW24ZDEtsqEhRyPWGzB9JJRnwSy3eFkppzAbB3ghRXxaIylA3NULF_5oEhkAAAAAQAAAAAAAAABAAAAAAAAALh_HDpIoFGvv8kox2KpjQHUBMu-dQCQzjvJL-EUgswm"
   }
 }
 ```
 
-## Proof Generation Steps
+## Proof Generation Steps (Prover)
 
-1. Decide what claims of the original VC are to be included in the VC.
+1. Decide what claims, from the original VC's list of claims (in the proof object), are to be revealed in the derived VC.
+2. Create a "claimIndex" object in the derived VC's proof object, with the chosen claims and their respective indexes in the original list.
 2. Create the "credentialSubject" content with the chosen claims' keys and values.
 3. Replace the numeric values with ranges wherever needed.
-4. Generate the proof from the original signature and new values.
+4. Generate the proof from the original signature, new values, and claim index object.
 
-## Proof Verification Steps
+## Proof Verification Steps (Verifier)
 
-1. Following the order of claims in the proof object and the values present in the VC, generate a list of messages in the form ["key1", "value1", "key2", "value2", ...]
+1. Following the order of claims in the proof object's claim index, and the values present in the VC, generate a list of messages in the form ["key1", "value1", "key2", "value2", ...]. Note that this message list must take into account the index of each message.
 2. Decode the signature as base64 and verify the message list against the signature.

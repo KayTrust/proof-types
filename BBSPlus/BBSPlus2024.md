@@ -54,6 +54,8 @@ Please note that all claim names mentioned in the VC's credentialSubject must be
   ],
   "credentialSubject": {
     "id": "did:example:123",
+    "givenName": "John",
+    "familyName": "Doe",
     "birthDate": 762365708
   },
   "issuer": "did:example:456",
@@ -62,12 +64,12 @@ Please note that all claim names mentioned in the VC's credentialSubject must be
     "type": "BBSPlus2024",
     "sig": "ibspQVU3EmMxS7jW3_sF0iFa4uu5A5ToZDjLJb-LsAuAkbPeM19CdaLQTvQw50QKcQj05T0VETpZ4Sb18H8tpGlaYMr66QmbRGYHTjQxqgTKdYoJVBswOIUAgzCKnrJEHYZfusgKqITXC97fbk4paA",
     "label": "Some label",
-    "claims": [".issuanceDate", ".expirationDate", "id", "birthDate"]
+    "claims": [".issuanceDate", ".expirationDate", "id", "givenName", "familyName", "birthDate"]
   }
 }
 ```
 
-## Proof Generation Steps
+## Proof Generation Steps (Issuer)
 
 1. Pick an order for the claims contained in the VC's credentialSubject attribute.
 2. Following that order, generate a list of messages in the form: ["key1", "value1", "key2", "value2", ...].
