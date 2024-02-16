@@ -86,7 +86,7 @@ Please note that all claim names mentioned in the VC's credentialSubject must be
 
 ## createBBSPlus2024Proof
 
-The following algorithm creates a BBSPlus2024 proof object for a verifiable credential. The required inputs are a credential, (which required fields `issuanceDate`, `credentialSubject` and an optional field `expirationDate`), a BBS+ private key and a public parameter known as a `label` (a string).
+The following algorithm creates a BBSPlus2024 proof object for a verifiable credential. The required inputs are a credential, a BBS+ private key and a public parameter known as a `label` (a string).
 
 1. Generate the message list `messages` from the credential.
     1. Create an object of depth one with `issuanceDate`, `expirationDate` and all the information from `credentialSubject`.
