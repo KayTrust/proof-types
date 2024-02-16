@@ -94,7 +94,7 @@ The "claims" attribute must be the exact same as in the original VC.
 The following algorithm creates a BBSPlusRange2024 proof object for a derived verifiable credential. The required inputs are:
 
 - A verified credential with a `BBSPlus2024` proof type. This will be refered as the original credential.
-- A base base 64-encoded `provingKey` provided by the verifier.
+- A base 64-encoded `provingKey` provided by the verifier.
 - A list of claims to be revealed, and for the claims for which a range will be applied to, a range indicating the minimum and exclusive maximum.
 
 1. Using the original credential, the prover derives the public parameter `label` from `proof.label` and `messageCount` from `proof.claims`. In the case of `messageCount`, its value should double the one from `proof.claims` length.
