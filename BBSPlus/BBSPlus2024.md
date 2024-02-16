@@ -100,7 +100,6 @@ The following algorithm creates a BBSPlus2024 proof object for a verifiable cred
     3. `label` is the same public parameter that was used as one of the inputs of this function.
     4. `claims` elements are `".issuanceDate"`, `".expirationDate"` and all the claim names included in the message list `messages`, in the order defined in step 1.2. It size must be half of what the total number of messages that were signed.
 
-
 Example of `proof` object:
 
 ```

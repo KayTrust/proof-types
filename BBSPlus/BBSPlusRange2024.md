@@ -100,11 +100,9 @@ The following algorithm creates a BBSPlusRange2024 proof object for a derived ve
   - A predicate future for the claim with integers `minimum` and `exclusiveMaximum` for the specified claim.
   - Optionally, other claims to be revealed, such as `credentialSubject.id`, or fields such as `issuanceDate`or `expirationDate`
 
-
-
 1. Using the original credential, the prover derives the public parameter `label` from `proof.label` and `messageCount` from `proof.claims`. In the case of `messageCount`, its value should double the one from `proof.claims` length.
 2. The `messages` list is rebuilt from the original credential and the `proof.claims` order (see `createBBSPlus2024Proof`).
-3. Using the requirements of the presentation definition and the `messages` list, the prover constructs a proof by alternating between selective disclosure and bound range proof:
+3. Using the requirements of the presentation definition, the proving key and the `messages` list, the prover constructs a proof by alternating between selective disclosure and bound range proof:
     1. If `credentialSubject.id`, `issuanceDate`or `expirationDate` are requested, selective disclosure is applied on their respective even (name claim) and odd (value) indexes.
     2. For the range proof, selective disclosure is applied on the claim even index and the  bound range statement is applied on the odd index.
 4. Generate `proof` object with `type`, `sig`, `claimIndex` and `claimCount` properties.
@@ -113,6 +111,8 @@ The following algorithm creates a BBSPlusRange2024 proof object for a derived ve
     3. `claimCount` is the number of elements on `proof.claims` from the original credential.
     4. `claimIndex` is an object that indicates the index of the fields claims revelaled or which a range proof was applied to. Currently, `issuanceDate`, `expirationDate` and `credentialSubjec.id` are the only fields that could be optionally asked to be revealed. Indexes are based on `proof.claims` from the original credential.
     5. `proofValue` is the base 64 url encoded proof.
+
+Example of `proof` object:
 
 ```
 "proof": {
@@ -128,3 +128,26 @@ The following algorithm creates a BBSPlusRange2024 proof object for a derived ve
     "proofValue": "AgAAAAAAAAAAt0r9e...-dQCQzjvJL-EUgswm"
 }
 ```
+
+## verifyBBSPlusRange2024Proof
+
+The following algorithm verifies a BBSPlusRange2024 proof returning a boolean as a result. The required inputs are:
+
+- A derived credential with a `BBSPlusRange2024` proof type, with the fields requested on the verifier presentation definition.
+- The `provingKey` shared to the prover.
+- The presentation definition that includes:
+  - The claim which value the verifier wants to test against a range.
+  - A predicate future for the claim with integers `minimum` and `exclusiveMaximum` for the specified claim.
+  - Optionally, other claims to be revealed, such as `credentialSubject.id`, or fields such as `issuanceDate`or `expirationDate`
+
+1. Using the derived credential, the verifier builds the public parameter `label` from `proof.label` and `messageCount` from `proof.claimCount`. In the case of `messageCount`, its value should double the one from `proof.claimCount`.
+3. Using the requirements of the presentation definition, the proving key and the indexes from `proof.claimIndex`, the verifier constructs a proof by alternating between selective disclosure and bound range proof:
+    1. If `credentialSubject.id`, `issuanceDate`or `expirationDate` were requested, selective disclosure is applied on the normalized indexes from `proof.claimCount`. In order to normalize the indexes, you transform them to the form `2*i` for the even (claim name) and `2*i+1` odd (value) in order to match the indexes on the original message list signed.
+    2. For the range proof, selective disclosure is applied on the claim even index and the bound range statement is applied on the odd index, you should normalize the `proof.claimCount` index the same as above.
+4. Generate `proof` object with `type`, `sig`, `claimIndex` and `claimCount` properties.
+    1. `type` is always "BBSPlusRange2024".
+    2. `label` is the public parameter on `proof.label` from the original credential.
+    3. `claimCount` is the number of elements on `proof.claims` from the original credential.
+    4. `claimIndex` is an object that indicates the index of the fields claims revealed or which a range proof was applied to. Currently, `issuanceDate`, `expirationDate` and `credentialSubjec.id` are the only fields that could be optionally asked to be revealed. Indexes are based on `proof.claims` from the original credential.
+    5. `proofValue` is the base 64 url encoded proof.
+
