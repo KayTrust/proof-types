@@ -93,24 +93,23 @@ The "claims" attribute must be the exact same as in the original VC.
 
 The following algorithm creates a BBSPlusRange2024 proof object for a derived verifiable credential. The required inputs are:
 
-- A verified credential with a `BBSPlus2024` proof type, required fields `issuanceDate`, `credentialSubject` and an optional field `expirationDate`. This will be refered as the original credential.
-- A base 64 url encoded`provingKey` provided by the verifier.
-- A presentation definition that includes:
-  - The claim which value the verifier wants to test against a range.
-  - A predicate future for the claim with integers `minimum` and `exclusiveMaximum` for the specified claim.
-  - Optionally, other claims to be revealed, such as `credentialSubject.id`, or fields such as `issuanceDate`or `expirationDate`
+- A verified credential with a `BBSPlus2024` proof type. This will be refered as the original credential.
+- A base base 64-encoded `provingKey` provided by the verifier.
+- A list of claims to be revealed, and for the claims for which a range will be applied to, a range indicating the minimum and exclusive maximum.
 
 1. Using the original credential, the prover derives the public parameter `label` from `proof.label` and `messageCount` from `proof.claims`. In the case of `messageCount`, its value should double the one from `proof.claims` length.
 2. The `messages` list is rebuilt from the original credential and the `proof.claims` order (see `createBBSPlus2024Proof`).
-3. Using the requirements of the presentation definition, the proving key and the `messages` list, the prover constructs a proof by alternating between selective disclosure and bound range proof:
-    1. If `credentialSubject.id`, `issuanceDate`or `expirationDate` are requested, selective disclosure is applied on their respective even (name claim) and odd (value) indexes.
-    2. For the range proof, selective disclosure is applied on the claim even index and the  bound range statement is applied on the odd index.
+3. Using the list of claims, the proving key and the `messages` list, the prover constructs a proof by alternating between selective disclosure and bound range proof:
+    1. The list of claims and the `messages` list must match in a way that all the values on the list of claims must be in an even index on the `messages` list.
+    1. Selective disclosure is applied on their respective even (property or name claim) and odd (value) indexes. The properties `.issuanceDate` and `.expirationDate` are always revealed.
+    1. For the range proof, selective disclosure is applied on the claim even index and the bound range statement is applied on the odd index (a value that is not revealed).
 4. Generate `proof` object with `type`, `sig`, `claimIndex` and `claimCount` properties.
     1. `type` is always "BBSPlusRange2024".
     2. `label` is the public parameter on `proof.label` from the original credential.
     3. `claimCount` is the number of elements on `proof.claims` from the original credential.
-    4. `claimIndex` is an object that indicates the index of the fields claims revealed or which a range proof was applied to. Currently, `issuanceDate`, `expirationDate` and `credentialSubjec.id` (optionally) are the only fields and values that could be revealed, besides the range claim name. Indexes are based on `proof.claims` from the original credential.
-    5. `proofValue` is the base 64 url encoded proof.
+    4. `claimIndex` is an object that indicates the index of the fields claims revealed or which a range proof was applied to. Indexes are based on `proof.claims` from the original credential.
+    5. `proofValue` is the base 64-encoded proof.
+    6. `provingKey` is the base 64-encoded proving key.
 
 Example of `proof` object:
 
@@ -125,7 +124,8 @@ Example of `proof` object:
       "birthDate": 3
     },
     "claimCount": 4,
-    "proofValue": "AgAAAAAAAAAAt0r9e...-dQCQzjvJL-EUgswm"
+    "proofValue": "AgAAAAAAAAAAt0r9e...+dQCQzjvJL+EUgswm",
+    "proovingKey": "asd+/asdgAAAAAAAAASDSDASAt0r9e...+dQCQzjvJL+EUgswm"
 }
 ```
 
@@ -135,15 +135,12 @@ The following algorithm verifies a BBSPlusRange2024 proof returning a boolean as
 
 - A derived credential with a `BBSPlusRange2024` proof type, with the fields requested on the verifier presentation definition.
 - The `provingKey` shared to the prover.
-- The presentation definition that includes:
-  - The claim which value the verifier wants to test against a range.
-  - A predicate future for the claim with integers `minimum` and `exclusiveMaximum` for the specified claim.
-  - Properties `issuanceDate` or `expirationDate` to be revealed
-  - Optionally, the `credentialSubject.id` claim to be revealed
+- A list of claims to be revealed, and for the claims for which a range will be applied to, a range indicating the minimum and exclusive maximum.
 
 1. Using the derived credential, the verifier builds the public parameter `label` from `proof.label` and `messageCount` from `proof.claimCount`. In the case of `messageCount`, its value should double the one from `proof.claimCount`.
-3. Using the requirements of the presentation definition, the proving key and the indexes from `proof.claimIndex`, the verifier constructs a proof verifier by alternating between selective disclosure and bound range proof:
-    1. Selective disclosure is applied to `issuanceDate`, `expirationDate` and `credentialSubject.id` (optional), based on the normalized indexes from `proof.claimCount`. In order to normalize the indexes, you transform them to the form `2*i` for the even (claim name) and `2*i+1` odd (value) in order to match the indexes on the original message list signed.
+3. Using the list of claims, the proving key and the indexes from `proof.claimIndex`, the verifier constructs a proof verifier by alternating between selective disclosure and bound range proof:
+    1. The `claimIndex` and list of claims must match in a way all the claims requested are presents as keys on the `claimIndex` object.
+    1. Selective disclosure is applied on their respective normalize indexes. In order to normalize the indexes, you transform them to the form `2*i` for the even (claim name) and `2*i+1` odd (value) in order to match the indexes on the original message list signed. The properties `.issuanceDate` and `.expirationDate` are always revealed.
     2. For the range proof, selective disclosure is applied on the claim even index and the bound range statement is applied on the odd index, you should normalize the `proof.claimCount` index the same as above.
 4. The verifier applies the proof verifier to see if the actual proof was correct.
 
