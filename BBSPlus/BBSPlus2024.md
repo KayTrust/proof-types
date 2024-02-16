@@ -91,14 +91,14 @@ The following algorithm creates a BBSPlus2024 proof object for a verifiable cred
 1. Generate the message list `messages` from the credential.
     1. Create an object of depth one with `issuanceDate`, `expirationDate` and all the information from `credentialSubject`.
     2. Define a claim order where the strings `.issuanceDate` and `.expirationDate` are always first.
-    3. Flat this new object in an array that must follow the pattern `[key1, value1, key2, value2, ...]`, where `keyn` is either `".issuanceDate"`, `".expirationDate"` or the claim name, always in a pair index, and the value in the subsequent odd index. Values for `issuanceDate` or `expirationDate` defaults to `0`.
+    3. Flat this new object in an array that must follow the pattern `[key1, value1, key2, value2, ...]`, where `keyn` is either `".issuanceDate"`, `".expirationDate"` or the claim name, always in a even index, and the value in the subsequent odd index. Values for `issuanceDate` or `expirationDate` defaults to `0`.
 2. Sign the message list with the BBS+ private key and public parameters. You must derived public parameter `messageCount` from the array generated in step 1.
 3. Encode the signature bytes in base 64 url.
 4. Generate `proof` object with `type`, `sig`, `label` and `claims` properties.
     1. `type` is always "BBSPlus2024".
     2. `sig` is the base 64 url encoded signature.
     3. `label` is the same public parameter that was used as one of the inputs of this function.
-    4. `claims` elements are `".issuanceDate"`, `".expirationDate"` and all the claim names included in the message list `messages`, in the order defined in step 1.2.
+    4. `claims` elements are `".issuanceDate"`, `".expirationDate"` and all the claim names included in the message list `messages`, in the order defined in step 1.2. It size must be half of what the total number of messages that were signed.
 
 
 Example of `proof` object:
