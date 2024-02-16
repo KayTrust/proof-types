@@ -114,7 +114,7 @@ The following algorithm creates a BBSPlusRange2024 proof object for a derived ve
 
 Example of `proof` object:
 
-```
+```json
 "proof": {
     "type": "BBSPlusRange2024",
     "label": "Some label",
@@ -124,7 +124,7 @@ Example of `proof` object:
       "id": 2,
       "birthDate": 3
     },
-    claimCount: 4,
+    "claimCount": 4,
     "proofValue": "AgAAAAAAAAAAt0r9e...-dQCQzjvJL-EUgswm"
 }
 ```

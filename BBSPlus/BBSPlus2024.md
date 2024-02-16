@@ -102,9 +102,9 @@ The following algorithm creates a BBSPlus2024 proof object for a verifiable cred
 
 Example of `proof` object:
 
-```
+```json
 { 
-  proof: {
+  "proof": {
     "type": "BBSPlus2024",
     "sig": "ibspQVU3EmMxS7jW3_sF0iFa4uu5A5ToZDjLJb-LsAuAkbPeM19CdaLQTvQw50QKcQj05T0VETpZ4Sb18H8tpGlaYMr66QmbRGYHTjQxqgTKdYoJVBswOIUAgzCKnrJEHYZfusgKqITXC97fbk4paA",
     "label": "Some label",
