@@ -25,11 +25,13 @@ It must contain the following attributes:
 
 <dl>
   <dt>type</dt>
-  <dd>The proof type, as defined in the Verifiable Credentials specification. The value MUST be <code>"BBSPlusRange2024"</code>.</dd>
+  <dd>The proof type, as defined in the Verifiable Credentials specification. The value MUST be <code>"BBSPlus2024"</code>.</dd>
   <dt>label</dt>
   <dd>The BBS+ label to be used.</dd>
   <dt>sig</dt>
   <dd>The content of the BBS+ signature.</dd>
+  <dt>claims</dt>
+  <dd>An ordered list of the `credentialSubject` claims covered by the proof. Special values `.issuanceDate` and `.expirationDate` refer to the VC's validity dates.</dd>
 </dl>
 
 ## Message encoding
